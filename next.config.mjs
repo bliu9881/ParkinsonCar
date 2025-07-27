@@ -1,3 +1,9 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Optimize for Amplify build environment
@@ -12,7 +18,7 @@ const nextConfig = {
     // Add path alias resolution
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": require("path").resolve(__dirname, "src"),
+      "@": path.resolve(__dirname, "src"),
     };
 
     if (!dev && !isServer) {
