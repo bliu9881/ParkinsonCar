@@ -26,32 +26,26 @@ const nextConfig = {
       "@": path.resolve(__dirname, "src"),
     };
 
-    // Memory optimizations
+    // Extreme memory optimizations
     config.optimization = {
       ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          default: {
-            minChunks: 1,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all',
-          },
-        },
-      },
-      // Reduce memory usage
+      splitChunks: false, // Disable chunk splitting to save memory
       minimize: !dev,
+      removeAvailableModules: false,
+      removeEmptyChunks: false,
+      mergeDuplicateChunks: false,
     };
 
-    // Reduce parallelism to save memory
+    // Reduce parallelism and memory usage
+    config.parallelism = 1;
+    config.cache = false; // Disable webpack cache to save memory
+    
+    // Reduce memory usage in production
     if (!dev) {
-      config.parallelism = 1;
+      config.stats = 'errors-only';
+      config.performance = {
+        hints: false,
+      };
     }
 
     return config;
