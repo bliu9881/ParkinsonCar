@@ -9,6 +9,12 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   // Optimize webpack configuration
   webpack: (config, { dev, isServer }) => {
+    // Add path alias resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": require("path").resolve(__dirname, "src"),
+    };
+
     if (!dev && !isServer) {
       // Reduce memory usage during build
       config.optimization = {
