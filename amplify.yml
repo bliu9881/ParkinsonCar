@@ -15,7 +15,7 @@ frontend:
         - export NODE_ENV=production
         - export DISABLE_ESLINT_PLUGIN=true
         - export NEXT_CACHE_DISABLED=1
-        - pnpm run build:amplify-safe
+        - pnpm run build:emergency
   artifacts:
     baseDirectory: .next
     files:

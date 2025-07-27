@@ -6,8 +6,8 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Minimal configuration for Amplify compatibility
-  output: "standalone",
+  // Disable standalone to avoid memory-intensive build traces
+  // output: "standalone", // Commented out to avoid build traces
   // Disable telemetry
   telemetry: false,
   // Disable source maps in production
@@ -17,8 +17,11 @@ const nextConfig = {
     // Reduce memory usage
     workerThreads: false,
     cpus: 1,
+    // Disable build traces completely
+    outputFileTracingRoot: false,
+    outputFileTracing: false,
   },
-  // Minimal webpack config with extreme memory optimizations
+  // Ultra-minimal webpack config to prevent memory issues
   webpack: (config, { dev, isServer }) => {
     // Add path alias resolution
     config.resolve.alias = {
@@ -26,47 +29,46 @@ const nextConfig = {
       "@": path.resolve(__dirname, "src"),
     };
 
-    // Extreme memory optimizations
+    // Ultra-aggressive memory optimizations
     config.optimization = {
-      ...config.optimization,
-      splitChunks: false, // Disable chunk splitting to save memory
       minimize: !dev,
+      // Disable all memory-intensive optimizations
+      splitChunks: false,
       removeAvailableModules: false,
       removeEmptyChunks: false,
       mergeDuplicateChunks: false,
-      concatenateModules: false, // Disable module concatenation to save memory
+      concatenateModules: false,
+      flagIncludedChunks: false,
+      occurrenceOrder: false,
+      providedExports: false,
+      usedExports: false,
+      sideEffects: false,
     };
 
-    // Reduce parallelism and memory usage
+    // Minimal parallelism and caching
     config.parallelism = 1;
-    config.cache = false; // Disable webpack cache to save memory
+    config.cache = false;
     
-    // Reduce memory usage in production
+    // Disable all non-essential features
     if (!dev) {
-      config.stats = 'errors-only';
-      config.performance = {
-        hints: false,
-      };
-      
-      // Disable source maps completely
+      config.stats = false;
+      config.performance = false;
       config.devtool = false;
       
-      // Reduce memory usage for CSS
-      config.optimization.splitChunks = false;
+      // Disable module resolution optimizations that use memory
+      config.resolve.symlinks = false;
+      config.resolve.cacheWithContext = false;
     }
 
-    // Force garbage collection more frequently
-    if (!dev && !isServer) {
-      const originalEntry = config.entry;
-      config.entry = async () => {
-        const entries = await originalEntry();
-        // Force GC before processing entries
-        if (global.gc) {
-          global.gc();
-        }
-        return entries;
-      };
-    }
+    // Minimal module rules to reduce memory
+    config.module.rules = config.module.rules.filter(rule => {
+      // Keep only essential rules
+      return rule.test && (
+        rule.test.toString().includes('tsx?') ||
+        rule.test.toString().includes('jsx?') ||
+        rule.test.toString().includes('css')
+      );
+    });
 
     return config;
   },

@@ -9,6 +9,8 @@
     "build:ultra-safe": "NODE_OPTIONS='--max-old-space-size=8192' next build",
     "build:amplify-safe": "NODE_OPTIONS='--max-old-space-size=8192' next build",
     "build:conservative": "NODE_OPTIONS='--max-old-space-size=6144' next build",
+    "build:minimal": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build:emergency": "cp next.config.emergency.mjs next.config.mjs && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "next lint"
   },
