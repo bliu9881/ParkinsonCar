@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Ultra memory-optimized build script for Amplify
+# Memory-optimized build script for Amplify (using only supported Node options)
 set -e
 
 echo "Starting memory-optimized build..."
 
-# Set extreme memory limits
-export NODE_OPTIONS="--max-old-space-size=8192 --optimize-for-size --gc-interval=50 --max-semi-space-size=128"
+# Set memory limits (only supported options)
+export NODE_OPTIONS="--max-old-space-size=8192"
 export NEXT_TELEMETRY_DISABLED=1
 export DISABLE_ESLINT_PLUGIN=true
 export NEXT_CACHE_DISABLED=1
@@ -21,6 +21,6 @@ echo "Available memory before build:"
 free -h || echo "Memory info not available"
 
 # Build with reduced parallelism
-pnpm run build:ultra-safe
+pnpm run build:amplify-safe
 
 echo "Build completed successfully!"

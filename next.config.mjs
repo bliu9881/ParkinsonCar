@@ -18,7 +18,7 @@ const nextConfig = {
     workerThreads: false,
     cpus: 1,
   },
-  // Minimal webpack config
+  // Minimal webpack config with extreme memory optimizations
   webpack: (config, { dev, isServer }) => {
     // Add path alias resolution
     config.resolve.alias = {
@@ -34,6 +34,7 @@ const nextConfig = {
       removeAvailableModules: false,
       removeEmptyChunks: false,
       mergeDuplicateChunks: false,
+      concatenateModules: false, // Disable module concatenation to save memory
     };
 
     // Reduce parallelism and memory usage
@@ -45,6 +46,25 @@ const nextConfig = {
       config.stats = 'errors-only';
       config.performance = {
         hints: false,
+      };
+      
+      // Disable source maps completely
+      config.devtool = false;
+      
+      // Reduce memory usage for CSS
+      config.optimization.splitChunks = false;
+    }
+
+    // Force garbage collection more frequently
+    if (!dev && !isServer) {
+      const originalEntry = config.entry;
+      config.entry = async () => {
+        const entries = await originalEntry();
+        // Force GC before processing entries
+        if (global.gc) {
+          global.gc();
+        }
+        return entries;
       };
     }
 
