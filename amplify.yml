@@ -7,8 +7,9 @@ frontend:
         - pnpm install
     build:
       commands:
-        - export NODE_OPTIONS="--max-old-space-size=2048"
+        - export NODE_OPTIONS="--max-old-space-size=3072"
         - export NEXT_TELEMETRY_DISABLED=1
+        - export GENERATE_SOURCEMAP=false
         - pnpm run build
   artifacts:
     baseDirectory: .next

@@ -12,7 +12,13 @@ const nextConfig = {
   telemetry: false,
   // Disable source maps in production to reduce memory usage
   productionBrowserSourceMaps: false,
-  // Optimize webpack configuration
+  // Disable experimental features
+  experimental: {
+    // Disable features that consume memory
+    optimizeCss: false,
+    optimizePackageImports: [],
+  },
+  // Optimize webpack configuration for memory
   webpack: (config, { dev, isServer }) => {
     // Add path alias resolution
     config.resolve.alias = {
@@ -20,34 +26,34 @@ const nextConfig = {
       "@": path.resolve(__dirname, "src"),
     };
 
-    if (!dev && !isServer) {
-      // Reduce memory usage during build
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          chunks: "all",
-          maxSize: 244000,
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            vendor: {
-              name: "vendor",
-              chunks: "all",
-              test: /[\\/]node_modules[\\/]/,
-              priority: 20,
-            },
-            common: {
-              name: "common",
-              minChunks: 2,
-              chunks: "all",
-              priority: 10,
-              reuseExistingChunk: true,
-              enforce: true,
-            },
+    // Reduce memory usage in all environments
+    config.optimization = {
+      ...config.optimization,
+      // Disable some optimizations to save memory
+      minimize: !dev,
+      minimizer: config.optimization.minimizer || [],
+      splitChunks: {
+        chunks: "all",
+        maxSize: 100000, // Smaller chunks
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          vendor: {
+            name: "vendor",
+            chunks: "all",
+            test: /[\\/]node_modules[\\/]/,
+            priority: 20,
+            maxSize: 100000,
           },
         },
-      };
-    }
+      },
+    };
+
+    // Reduce memory usage during build
+    config.watchOptions = {
+      poll: false,
+      ignored: /node_modules/,
+    };
     return config;
   },
 };
