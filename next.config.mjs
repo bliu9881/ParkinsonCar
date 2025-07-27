@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Optimize for Amplify build environment
-  output: "standalone",
-  experimental: {
-    // Reduce memory usage during build
-    optimizePackageImports: ["@aws-amplify/ui-react", "react-icons"],
-  },
+  output: "export",
+  trailingSlash: true,
+  // Disable telemetry
+  telemetry: false,
   // Disable source maps in production to reduce memory usage
   productionBrowserSourceMaps: false,
   // Optimize webpack configuration
@@ -16,11 +15,23 @@ const nextConfig = {
         ...config.optimization,
         splitChunks: {
           chunks: "all",
+          maxSize: 244000,
           cacheGroups: {
+            default: false,
+            vendors: false,
             vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: "vendors",
+              name: "vendor",
               chunks: "all",
+              test: /[\\/]node_modules[\\/]/,
+              priority: 20,
+            },
+            common: {
+              name: "common",
+              minChunks: 2,
+              chunks: "all",
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
             },
           },
         },

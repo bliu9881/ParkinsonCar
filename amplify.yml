@@ -4,13 +4,14 @@ frontend:
     preBuild:
       commands:
         - npm install -g pnpm
-        - pnpm install
+        - pnpm install --prod
     build:
       commands:
-        - export NODE_OPTIONS="--max-old-space-size=4096"
+        - export NODE_OPTIONS="--max-old-space-size=2048"
+        - export NEXT_TELEMETRY_DISABLED=1
         - pnpm run build
   artifacts:
-    baseDirectory: .next
+    baseDirectory: out
     files:
       - "**/*"
   cache:
