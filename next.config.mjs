@@ -10,21 +10,49 @@ const nextConfig = {
   output: "standalone",
   // Disable telemetry
   telemetry: false,
-  // Disable source maps
+  // Disable source maps in production
   productionBrowserSourceMaps: false,
+  // Reduce memory usage during build
+  experimental: {
+    // Reduce memory usage
+    workerThreads: false,
+    cpus: 1,
+  },
   // Minimal webpack config
-  webpack: (config) => {
+  webpack: (config, { dev, isServer }) => {
     // Add path alias resolution
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "src"),
     };
 
-    // Disable complex optimizations
+    // Memory optimizations
     config.optimization = {
       ...config.optimization,
-      splitChunks: false,
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          default: {
+            minChunks: 1,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: -10,
+            chunks: 'all',
+          },
+        },
+      },
+      // Reduce memory usage
+      minimize: !dev,
     };
+
+    // Reduce parallelism to save memory
+    if (!dev) {
+      config.parallelism = 1;
+    }
 
     return config;
   },
