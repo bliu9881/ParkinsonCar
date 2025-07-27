@@ -7,8 +7,7 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Optimize for Amplify build environment
-  output: "export",
-  trailingSlash: true,
+  output: "standalone",
   // Disable telemetry
   telemetry: false,
   // Disable source maps in production to reduce memory usage
